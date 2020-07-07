@@ -1,0 +1,35 @@
+{
+  "name": "calcul-instagram-user-rate",
+  "version": "1.0.0",
+  "description": "Small utility to generate simple csv file describing some define user engagement rates (on instagram obviously))",
+  "main": "./build/main.js",
+  "scripts": {
+    "build": "tsc --p ./tsconfig.json",
+    "start": "npm run build && node ./build/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximeSurmontGH/calcul-instagram-user-engagement-rate.git"
+  },
+  "keywords": [
+    "js",
+    "javascript",
+    "ts",
+    "typescript",
+    "instagram",
+    "scraller"
+  ],
+  "author": "maxime surmont",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maximeSurmontGH/calcul-instagram-user-engagement-rate/issues"
+  },
+  "homepage": "https://github.com/maximeSurmontGH/calcul-instagram-user-engagement-rate#readme",
+  "devDependencies": {
+    "typescript": "3.9.6"
+  },
+  "dependencies": {
+    "axios": "0.19.2",
+    "xlsx": "0.16.3"
+  }
+}
