@@ -26,10 +26,12 @@
   },
   "homepage": "https://github.com/maximeSurmontGH/calcul-instagram-user-engagement-rate#readme",
   "devDependencies": {
-    "typescript": "3.9.6"
+    "@types/node": "^14.0.19",
+    "typescript": "^3.9.6"
   },
   "dependencies": {
     "axios": "0.19.2",
+    "moment": "^2.27.0",
     "xlsx": "0.16.3"
   }
 }

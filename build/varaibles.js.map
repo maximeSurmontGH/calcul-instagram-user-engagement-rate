@@ -1,1 +1,1 @@
-{"version":3,"file":"varaibles.js","sourceRoot":"","sources":["../src/varaibles.ts"],"names":[],"mappings":";;;AAAa,QAAA,QAAQ,GAAG,4BAA4B,CAAA;AACvC,QAAA,UAAU,GAAG,SAAS,CAAA;AACtB,QAAA,QAAQ,GAAG;IACtB,QAAQ;IACR,aAAa;IACb,gBAAgB;IAChB,YAAY;IACZ,WAAW;IACX,iBAAiB;IACjB,QAAQ;IACR,gBAAgB;IAChB,MAAM;CACP,CAAA"}
+{"version":3,"file":"varaibles.js","sourceRoot":"","sources":["../src/varaibles.ts"],"names":[],"mappings":";;;AAAa,QAAA,QAAQ,GAAG,4BAA4B,CAAA;AACvC,QAAA,UAAU,GAAG,SAAS,CAAA;AACtB,QAAA,QAAQ,GAAG;IAItB,YAAY;CAMb,CAAA"}
