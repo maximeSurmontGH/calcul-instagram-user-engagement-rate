@@ -1,7 +1,7 @@
 {
   "name": "calcul-instagram-user-rate",
   "version": "1.0.0",
-  "description": "Small utility to generate simple csv file describing some define user engagement rates (on instagram obviously))",
+  "description": "Small utility to generate simple excel file describing some define user engagement rates (on instagram obviously))",
   "main": "./build/main.js",
   "scripts": {
     "build": "tsc --p ./tsconfig.json",
