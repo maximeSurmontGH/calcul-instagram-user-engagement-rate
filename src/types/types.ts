@@ -15,22 +15,66 @@ export interface IAccountPost {
 }
 
 // obviously incomplete
-export interface IInstagramApiResponse {
+export interface IInstagramApiRootPageResponse {
   graphql: {
     user: {
       full_name: string
       username: string
+      id: string
       edge_followed_by: {
         count: number
       }
       edge_owner_to_timeline_media?: {
         count: number
+        page_info: {
+          has_next_page: boolean
+          end_cursor: string
+        }
         edges: [
           {
             node: {
               taken_at_timestamp: number
               display_url: string
               edge_liked_by: {
+                count: number
+              }
+              comments_disabled: boolean
+              edge_media_to_comment: {
+                count: number
+              }
+              is_video: boolean
+              video_view_count: number
+              edge_media_to_caption: {
+                edges: Array<{
+                  node: {
+                    text: string
+                  }
+                }>
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
+// obviously incomplete
+export interface IInstagramApiPageResponse {
+  data: {
+    user: {
+      edge_owner_to_timeline_media?: {
+        count: number
+        page_info: {
+          has_next_page: boolean
+          end_cursor: string
+        }
+        edges: [
+          {
+            node: {
+              taken_at_timestamp: number
+              display_url: string
+              edge_media_preview_like: {
                 count: number
               }
               comments_disabled: boolean
