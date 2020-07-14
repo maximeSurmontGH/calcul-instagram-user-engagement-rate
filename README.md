@@ -1,6 +1,12 @@
 # CALCUL SOME INSTAGRAM USER ENGAGEMENT RATE
 
+## Stack
+
+typescript
+
 ## Installation
+
+You will need node js.
 
 ```bash
 # install dependencies
