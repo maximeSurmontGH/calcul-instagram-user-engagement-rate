@@ -1,6 +1,9 @@
 import {
-  IInstagramApiRootPageResponse,
   IInstagramApiPageResponse,
+  IFormatedAccountData,
+  IPageFetchResponse,
+  IRootPageFetchResponse,
+  IInstagramApiRootPageResponse,
 } from "../types/types"
 import {
   ACCOUNT_NAMES,
@@ -9,113 +12,127 @@ import {
   ROOT_PAGE_SIZE,
   QUERY_HASH,
   PAGE_SIZE,
+  WAIT_BETWEEN_TWO_PAGE,
 } from "../variables"
 import axios from "axios"
+import {
+  formatPageAccountData,
+  formatRootPageAccountData,
+} from "./data-formattor.service"
 
-export const fetchData = async (): Promise<IInstagramApiRootPageResponse[]> => {
-  const accountDatas = new Array<IInstagramApiRootPageResponse>()
+export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
+  const accountDatas = new Array<IFormatedAccountData>()
   for (const accountName of ACCOUNT_NAMES) {
-    const accountData = await fetchRootData(accountName)
-    const totalPostsNumber =
-      accountData.graphql.user.edge_owner_to_timeline_media.count
-    let postsCounter = ROOT_PAGE_SIZE
+    let {
+      formattedAccountData,
+      totalPostsNumber,
+      postsCounter,
+      followersCounter,
+      isAllDataFetched,
+      accountId,
+      endCursor,
+    } = await fetchRootPageData(accountName)
 
-    let isAllDataFetched = !accountData.graphql.user
-      .edge_owner_to_timeline_media.page_info.has_next_page
     if (isAllDataFetched) {
-      accountDatas.push(accountData)
+      accountDatas.push(formattedAccountData)
     } else {
-      const accountId = accountData.graphql.user.id
-      let endCursor =
-        accountData.graphql.user.edge_owner_to_timeline_media.page_info
-          .end_cursor
       do {
         // used because request end up in 429 ... cheap throttling
-        await sleep(1000)
-        const pageUrl = getDataUrl(accountId, endCursor)
-        let pageAxiosResponse
-        try {
-          pageAxiosResponse = await axios.get(pageUrl)
-        } catch (e) {
-          console.error(`[GET FAIL] ${pageUrl}`)
-          console.error(e)
-          // throw new Error(e)
-        }
-        const accountDataToAdd: IInstagramApiPageResponse =
-          pageAxiosResponse.data
-
-        accountDataToAdd.data.user.edge_owner_to_timeline_media.edges.forEach(
-          (edge) => {
-            accountData.graphql.user.edge_owner_to_timeline_media.edges.push({
-              node: {
-                taken_at_timestamp: edge.node.taken_at_timestamp,
-                display_url: edge.node.display_url,
-                edge_liked_by: {
-                  count: edge.node.edge_media_preview_like.count,
-                },
-                comments_disabled: edge.node.comments_disabled,
-                edge_media_to_comment: {
-                  count: edge.node.edge_media_to_comment.count,
-                },
-                is_video: edge.node.is_video,
-                video_view_count: edge.node.video_view_count,
-                edge_media_to_caption: {
-                  edges: [
-                    {
-                      node: {
-                        text: edge.node.edge_media_to_caption.edges[0]
-                          ? edge.node.edge_media_to_caption.edges[0].node.text
-                          : "",
-                      },
-                    },
-                  ],
-                },
-              },
-            })
-          }
-        )
-
-        isAllDataFetched = !accountDataToAdd.data.user
-          .edge_owner_to_timeline_media.page_info.has_next_page
-        if (!isAllDataFetched) {
-          endCursor =
-            accountDataToAdd.data.user.edge_owner_to_timeline_media.page_info
-              .end_cursor
-        }
+        await sleep(WAIT_BETWEEN_TWO_PAGE)
 
         postsCounter = postsCounter + PAGE_SIZE
-        console.log(
-          `[GET SUCCES] ${pageUrl} - ${postsCounter}/${totalPostsNumber}`
+
+        const pageData = await fetchPageData(
+          accountId,
+          endCursor,
+          totalPostsNumber,
+          followersCounter,
+          postsCounter
         )
+
+        isAllDataFetched = pageData.isAllDataFetched
+        endCursor = pageData.endCursor
+
+        formattedAccountData.posts = [
+          ...formattedAccountData.posts,
+          ...pageData.posts,
+        ]
       } while (!isAllDataFetched)
-      accountDatas.push(accountData)
+      accountDatas.push(formattedAccountData)
     }
   }
   return accountDatas
 }
 
-const getRootDataUrl = (accountName: string) =>
+const getRootPageUrl = (accountName: string) =>
   `${BASE_URL}/${accountName}/${URL_ADD_ON}`
 
-const getDataUrl = (accountId: string, endCursor: string) =>
+const getPageUrl = (accountId: string, endCursor: string) =>
   `${BASE_URL}/graphql/query/?query_hash=${QUERY_HASH}&variables=%7B%22id%22%3A%22${accountId}%22%2C%22first%22%3A${PAGE_SIZE}%2C%22after%22%3A%22${endCursor}%22%7D`
 
-const fetchRootData = async (
+const fetchRootPageData = async (
   accountName: string
-): Promise<IInstagramApiRootPageResponse> => {
-  const url = getRootDataUrl(accountName)
+): Promise<IRootPageFetchResponse> => {
+  const url = getRootPageUrl(accountName)
   try {
     const response = await axios.get(url)
+    const unformattedAccountData = response.data as IInstagramApiRootPageResponse
     const totalPostsNumber =
-      response.data.graphql.user.edge_owner_to_timeline_media.count
-    let postsCounter = ROOT_PAGE_SIZE
+      unformattedAccountData.graphql.user.edge_owner_to_timeline_media.count
+    const postsCounter = ROOT_PAGE_SIZE
+    const isAllDataFetched = !unformattedAccountData.graphql.user
+      .edge_owner_to_timeline_media.page_info.has_next_page
+    const accountId = unformattedAccountData.graphql.user.id
+    const endCursor =
+      unformattedAccountData.graphql.user.edge_owner_to_timeline_media.page_info
+        .end_cursor
+    const followersCounter =
+      unformattedAccountData.graphql.user.edge_followed_by.count
     console.log(`[GET SUCCES] ${url} - ${postsCounter}/${totalPostsNumber}`)
-    return response.data
+    const formattedAccountData = formatRootPageAccountData(
+      unformattedAccountData
+    )
+    return {
+      formattedAccountData,
+      totalPostsNumber,
+      postsCounter,
+      followersCounter,
+      isAllDataFetched,
+      accountId,
+      endCursor,
+    }
   } catch (e) {
     console.error(`[GET FAIL] ${url}`)
-    console.error(e)
+    throw new Error(e)
+  }
+}
 
-    // throw new Error(e)
+const fetchPageData = async (
+  accountId: string,
+  endCursor: string,
+  totalPostsNumber: number,
+  followersCounter: number,
+  postsCounter: number
+): Promise<IPageFetchResponse> => {
+  const url = getPageUrl(accountId, endCursor)
+  try {
+    const response = await axios.get(url)
+    const unformattedAccountData = response.data as IInstagramApiPageResponse
+    const isAllDataFetched = !unformattedAccountData.data.user
+      .edge_owner_to_timeline_media.page_info.has_next_page
+    const endCursor =
+      unformattedAccountData.data.user.edge_owner_to_timeline_media.page_info
+        .end_cursor
+    console.log(`[GET SUCCES] ${url} - ${postsCounter}/${totalPostsNumber}`)
+    const posts = formatPageAccountData(response.data, followersCounter)
+    return {
+      posts,
+      isAllDataFetched,
+      endCursor,
+    }
+  } catch (e) {
+    console.error(`[GET FAIL] ${url}`)
+    throw new Error(e)
   }
 }
 

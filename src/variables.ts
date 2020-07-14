@@ -16,3 +16,5 @@ export const QUERY_HASH = "15bf78a4ad24e33cbd838fdb31353ac1"
 export const ROOT_PAGE_SIZE = 12
 // lmite 50
 export const PAGE_SIZE = 50
+// in ms
+export const WAIT_BETWEEN_TWO_PAGE = 500

@@ -1,3 +1,19 @@
+export interface IRootPageFetchResponse {
+  formattedAccountData: IFormatedAccountData
+  totalPostsNumber: number
+  postsCounter: number
+  followersCounter: number
+  isAllDataFetched: boolean
+  accountId: string
+  endCursor: string
+}
+
+export interface IPageFetchResponse {
+  posts: IAccountPost[]
+  isAllDataFetched: boolean
+  endCursor: string
+}
+
 export interface IFormatedAccountData {
   accountLabel: string
   followersCounter: number
