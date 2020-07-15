@@ -44,9 +44,6 @@ export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
       accountDatas.push(formattedAccountData)
     } else {
       do {
-        // used because request end up in 429 ... cheap throttling
-        // await sleep(WAIT_BETWEEN_TWO_PAGE)
-
         postsCounter = postsCounter + PAGE_SIZE
 
         const pageData = await fetchPageData(
@@ -141,8 +138,4 @@ const fetchPageData = async (
     console.error(`[GET FAIL] ${url}`)
     throw new Error(e)
   }
-}
-
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }
