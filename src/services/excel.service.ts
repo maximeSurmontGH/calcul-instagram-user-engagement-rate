@@ -1,5 +1,6 @@
 import { IFormatedAccountData } from "../types/types"
 import * as XLSX from "xlsx"
+import * as moment from "moment"
 
 export const buildExcelFile = (
   formatedAccountDatas: IFormatedAccountData[]
@@ -15,6 +16,8 @@ export const buildExcelFile = (
     )
   })
 
-  XLSX.writeFile(workbook, `./files/user-engagement-rates.xls`)
-  console.log("File generated.")
+  const now = moment().format("DD-MM-YYYY")
+
+  XLSX.writeFile(workbook, `./files/engagement-rates-${now}.xls`)
+  console.log("File generated in the folder './files'.")
 }

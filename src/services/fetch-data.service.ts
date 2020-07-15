@@ -14,6 +14,8 @@ import {
   PAGE_SIZE,
   DELAY_BETWEEN_TWO_PAGE,
   NUMBER_OF_CONCURRENT_REQUEST,
+  NUMBER_OF_MAXIMUM_RETRY,
+  DELAY_BETWEEN_TWO_RETRY,
 } from "../variables"
 import axios from "axios"
 import {
@@ -28,8 +30,7 @@ const limiter = new Bottleneck({
 })
 
 export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
-  const accountDatas = new Array<IFormatedAccountData>()
-  for (const accountName of ACCOUNT_NAMES) {
+  const accountDatas = ACCOUNT_NAMES.map(async (accountName) => {
     let {
       formattedAccountData,
       totalPostsNumber,
@@ -41,7 +42,7 @@ export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
     } = await fetchRootPageData(accountName)
 
     if (isAllDataFetched) {
-      accountDatas.push(formattedAccountData)
+      return formattedAccountData
     } else {
       do {
         postsCounter = postsCounter + PAGE_SIZE
@@ -62,10 +63,10 @@ export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
           ...pageData.posts,
         ]
       } while (!isAllDataFetched)
-      accountDatas.push(formattedAccountData)
+      return formattedAccountData
     }
-  }
-  return accountDatas
+  })
+  return Promise.all(accountDatas)
 }
 
 const getRootPageUrl = (accountName: string) =>
@@ -116,7 +117,8 @@ const fetchPageData = async (
   endCursor: string,
   totalPostsNumber: number,
   followersCounter: number,
-  postsCounter: number
+  postsCounter: number,
+  retryCounter: number = 0
 ): Promise<IPageFetchResponse> => {
   const url = getPageUrl(accountId, endCursor)
   try {
@@ -135,7 +137,24 @@ const fetchPageData = async (
       endCursor,
     }
   } catch (e) {
-    console.error(`[GET FAIL] ${url}`)
+    console.error(
+      `[GET FAIL] ${url} - on retry ${retryCounter}/${NUMBER_OF_MAXIMUM_RETRY}`
+    )
+    if (retryCounter < NUMBER_OF_MAXIMUM_RETRY) {
+      await sleep(DELAY_BETWEEN_TWO_RETRY)
+      return fetchPageData(
+        accountId,
+        endCursor,
+        totalPostsNumber,
+        followersCounter,
+        postsCounter,
+        retryCounter + 1
+      )
+    }
     throw new Error(e)
   }
+}
+
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

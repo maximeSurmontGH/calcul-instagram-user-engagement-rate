@@ -36,7 +36,9 @@ An excel file with a sheet for each account with the following columns :
 ## Disclaimer
 
 Not sure about its legality. Use it at your own risk.
-Requests often end up in 429. You may need to retrieve the data one account by one account. A better throttling must be initialized.
+
+Requests often end up in 429. You should try to play with the different parameters "NUMBER_OF_CONCURRENT_REQUEST", "DELAY_BETWEEN_TWO_PAGE", "NUMBER_OF_MAXIMUM_RETRY" and "DELAY_BETWEEN_TWO_RETRY". Default values were the ones working for me.
+
 Still not working ? maybe :
 
 - Try later
