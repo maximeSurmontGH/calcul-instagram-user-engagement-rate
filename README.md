@@ -19,6 +19,7 @@ npm run start
 ```
 
 Set in the ./src/variables, the accounts, you want to get the data from. It must be the account names.
+You can also change the different parameters from this file, such as the throttle paameters, etc.
 
 ## Result
 

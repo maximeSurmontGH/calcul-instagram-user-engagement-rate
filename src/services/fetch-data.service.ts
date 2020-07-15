@@ -12,13 +12,20 @@ import {
   ROOT_PAGE_SIZE,
   QUERY_HASH,
   PAGE_SIZE,
-  WAIT_BETWEEN_TWO_PAGE,
+  DELAY_BETWEEN_TWO_PAGE,
+  NUMBER_OF_CONCURRENT_REQUEST,
 } from "../variables"
 import axios from "axios"
 import {
   formatPageAccountData,
   formatRootPageAccountData,
 } from "./data-formattor.service"
+import Bottleneck from "bottleneck"
+
+const limiter = new Bottleneck({
+  maxConcurrent: NUMBER_OF_CONCURRENT_REQUEST,
+  minTime: DELAY_BETWEEN_TWO_PAGE,
+})
 
 export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
   const accountDatas = new Array<IFormatedAccountData>()
@@ -38,7 +45,7 @@ export const fetchAndFormatData = async (): Promise<IFormatedAccountData[]> => {
     } else {
       do {
         // used because request end up in 429 ... cheap throttling
-        await sleep(WAIT_BETWEEN_TWO_PAGE)
+        // await sleep(WAIT_BETWEEN_TWO_PAGE)
 
         postsCounter = postsCounter + PAGE_SIZE
 
@@ -75,7 +82,7 @@ const fetchRootPageData = async (
 ): Promise<IRootPageFetchResponse> => {
   const url = getRootPageUrl(accountName)
   try {
-    const response = await axios.get(url)
+    const response = await limiter.schedule(() => axios.get(url))
     const unformattedAccountData = response.data as IInstagramApiRootPageResponse
     const totalPostsNumber =
       unformattedAccountData.graphql.user.edge_owner_to_timeline_media.count
@@ -116,7 +123,7 @@ const fetchPageData = async (
 ): Promise<IPageFetchResponse> => {
   const url = getPageUrl(accountId, endCursor)
   try {
-    const response = await axios.get(url)
+    const response = await limiter.schedule(() => axios.get(url))
     const unformattedAccountData = response.data as IInstagramApiPageResponse
     const isAllDataFetched = !unformattedAccountData.data.user
       .edge_owner_to_timeline_media.page_info.has_next_page

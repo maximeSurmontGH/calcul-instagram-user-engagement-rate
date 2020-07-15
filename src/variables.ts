@@ -1,14 +1,14 @@
 export const BASE_URL = "https://www.instagram.com"
 export const URL_ADD_ON = "?__a=1"
 export const ACCOUNT_NAMES = [
-  // "sezane",
-  // "balzacparis",
-  // "leslipfrancais",
-  // "thekooples",
-  // "majeparis",
-  // "zadigetvoltaire",
-  // "hermes",
-  // "chanelofficial",
+  "sezane",
+  "balzacparis",
+  "leslipfrancais",
+  "thekooples",
+  "majeparis",
+  "zadigetvoltaire",
+  "hermes",
+  "chanelofficial",
   "dior",
 ]
 export const QUERY_HASH = "15bf78a4ad24e33cbd838fdb31353ac1"
@@ -16,5 +16,6 @@ export const QUERY_HASH = "15bf78a4ad24e33cbd838fdb31353ac1"
 export const ROOT_PAGE_SIZE = 12
 // lmite 50
 export const PAGE_SIZE = 50
+export const NUMBER_OF_CONCURRENT_REQUEST = 1
 // in ms
-export const WAIT_BETWEEN_TWO_PAGE = 500
+export const DELAY_BETWEEN_TWO_PAGE = 200

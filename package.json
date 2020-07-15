@@ -26,6 +26,7 @@
   "homepage": "https://github.com/maximeSurmontGH/calcul-instagram-user-engagement-rate#readme",
   "devDependencies": {
     "@types/node": "14.0.19",
+    "bottleneck": "^2.19.5",
     "typescript": "3.9.6"
   },
   "dependencies": {
