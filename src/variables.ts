@@ -5,11 +5,6 @@ export const ACCOUNT_NAMES = [
   "balzacparis",
   "leslipfrancais",
   "thekooples",
-  "majeparis",
-  "zadigetvoltaire",
-  "hermes",
-  "chanelofficial",
-  "dior",
 ]
 export const QUERY_HASH = "15bf78a4ad24e33cbd838fdb31353ac1"
 // do not change

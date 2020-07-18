@@ -33,6 +33,7 @@ export interface IAccountPost {
   date: string
   likesCounter: number
   commentsCounter?: number
+  tagsCounter?: number
   viewsCounter?: number
   engagementRate?: number
 }

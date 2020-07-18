@@ -17,6 +17,10 @@ export const formatRootPageAccountData = (
       const viewsCounter = edge.node.is_video
         ? edge.node.video_view_count
         : undefined
+      const tagsCounter = edge.node.edge_media_to_caption.edges[0]
+        ? edge.node.edge_media_to_caption.edges[0].node.text.split("#").length -
+          1
+        : undefined
       const engagementRate = edge.node.comments_disabled
         ? undefined
         : getEngagementRate(
@@ -33,6 +37,7 @@ export const formatRootPageAccountData = (
         date,
         likesCounter: edge.node.edge_liked_by.count,
         commentsCounter,
+        tagsCounter,
         viewsCounter,
         engagementRate,
       }
@@ -58,6 +63,10 @@ export const formatPageAccountData = (
       const viewsCounter = edge.node.is_video
         ? edge.node.video_view_count
         : undefined
+      const tagsCounter = edge.node.edge_media_to_caption.edges[0]
+        ? edge.node.edge_media_to_caption.edges[0].node.text.split("#").length -
+          1
+        : undefined
       const engagementRate = edge.node.comments_disabled
         ? undefined
         : getEngagementRate(
@@ -74,6 +83,7 @@ export const formatPageAccountData = (
         date,
         likesCounter: edge.node.edge_media_preview_like.count,
         commentsCounter,
+        tagsCounter,
         viewsCounter,
         engagementRate,
       }
