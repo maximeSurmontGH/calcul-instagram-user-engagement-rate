@@ -1,15 +1,11 @@
 import { buildExcelFile } from "./services/excel.service"
 import { fetchAndFormatData } from "./services/fetch-data.service"
-import * as moment from "moment"
+import { getGlobalAccountDatas } from "./services/global-data.service"
 
 const main = async () => {
-  const startTimestamp = moment()
   const accountDatas = await fetchAndFormatData()
-  const dataFetchedTimestamp = moment()
-  console.log(
-    `Data fetched in ${(startTimestamp.diff(dataFetchedTimestamp), "seconds")}.`
-  )
-  buildExcelFile(accountDatas)
+  const globalAccountDatas = getGlobalAccountDatas(accountDatas)
+  buildExcelFile(globalAccountDatas, accountDatas)
 }
 
 main()

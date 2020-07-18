@@ -14,6 +14,13 @@ export interface IPageFetchResponse {
   endCursor: string
 }
 
+export interface IGlobalAccountData {
+  accountLabel: string
+  followersCounter: number
+  globalEngagementRate?: number
+  lastYearEngagementRate?: number
+}
+
 export interface IFormatedAccountData {
   accountLabel: string
   followersCounter: number
